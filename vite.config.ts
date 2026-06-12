@@ -51,6 +51,19 @@ export default defineConfig({
 					name: 'client',
 					environment: 'jsdom',
 					include: ['src/routes/**/*.test.{js,ts}'],
+					exclude: ['src/**/*.e2e.test.{js,ts}'],
+					setupFiles: ['src/test-setup.ts']
+				}
+			},
+			{
+				extends: './vite.config.ts',
+				resolve: {
+					conditions: ['browser']
+				},
+				test: {
+					name: 'e2e',
+					environment: 'jsdom',
+					include: ['src/**/*.e2e.test.{js,ts}'],
 					setupFiles: ['src/test-setup.ts']
 				}
 			}
