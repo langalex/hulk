@@ -114,7 +114,8 @@ describe('daily overview page', () => {
 			expect(dayRepository.addIntake).toHaveBeenCalledWith('2026-06-12', {
 				time: '10:00',
 				description: 'Shake',
-				grams: 25
+				grams: 25,
+				multiplier: 1
 			});
 		});
 	});
@@ -137,8 +138,22 @@ describe('daily overview page', () => {
 			expect(dayRepository.addIntake).toHaveBeenCalledWith('2026-06-12', {
 				time: '10:00',
 				description: 'Shake',
-				grams: 50
+				grams: 50,
+				multiplier: 2
 			});
+		});
+	});
+
+	it('shows the multiplier in the overview', async () => {
+		vi.mocked(dayRepository.getDay).mockResolvedValue({
+			...emptyDay,
+			intakes: [{ id: '1', time: '10:00', description: 'Shake', grams: 50, multiplier: 2 }]
+		});
+
+		render(Page);
+
+		await waitFor(() => {
+			expect(screen.getByText('×2')).toBeInTheDocument();
 		});
 	});
 

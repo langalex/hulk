@@ -75,7 +75,8 @@
 		await dayRepository.addIntake(selectedDate, {
 			time: formTime,
 			description: formDescription.trim(),
-			grams: Number(formGrams) * Number(formMultiplier)
+			grams: Number(formGrams) * Number(formMultiplier),
+			multiplier: Number(formMultiplier)
 		});
 		closeForm();
 		await loadDay();

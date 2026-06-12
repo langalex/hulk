@@ -47,7 +47,12 @@
 			<tbody class="divide-y divide-zinc-800">
 				{#each sorted as intake (intake.id)}
 					<tr class="text-zinc-100">
-						<td class="px-3 py-2">{intake.description}</td>
+						<td class="px-3 py-2">
+							{intake.description}
+							{#if intake.multiplier && intake.multiplier !== 1}
+								<span class="ml-1 text-xs text-zinc-500">×{intake.multiplier}</span>
+							{/if}
+						</td>
 						<td class="px-3 py-2 text-right tabular-nums">{intake.grams} g</td>
 						{#if onRemove}
 							<td class="px-2 py-2 text-right">

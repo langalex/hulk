@@ -3,6 +3,7 @@ export interface IntakeEntry {
 	time: string;
 	description: string;
 	grams: number;
+	multiplier?: number;
 }
 
 export interface DayDocument {

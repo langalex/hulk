@@ -28,7 +28,8 @@ export async function addIntake(
 		id: entry.id ?? crypto.randomUUID(),
 		time: entry.time,
 		description: entry.description,
-		grams: entry.grams
+		grams: entry.grams,
+		multiplier: entry.multiplier
 	};
 	doc.intakes = [...doc.intakes, intake].sort((a, b) => a.time.localeCompare(b.time));
 	await db.put(doc);
