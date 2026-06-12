@@ -105,6 +105,10 @@ describe('daily overview page', () => {
 
 		render(Page);
 
+		await waitFor(() => {
+			expect(screen.getByRole('button', { name: 'Add protein' })).toBeInTheDocument();
+		});
+
 		await user.click(screen.getByRole('button', { name: 'Add protein' }));
 		await user.type(screen.getByLabelText(/^Description$/i), 'Shake');
 		await user.clear(screen.getByLabelText(/^Grams$/i));
@@ -126,6 +130,10 @@ describe('daily overview page', () => {
 		vi.setSystemTime(new Date('2026-06-12T10:00:00'));
 		const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
 		render(Page);
+
+		await waitFor(() => {
+			expect(screen.getByRole('button', { name: 'Add protein' })).toBeInTheDocument();
+		});
 
 		await user.click(screen.getByRole('button', { name: 'Add protein' }));
 		await user.type(screen.getByLabelText(/^Description$/i), 'Shake');
