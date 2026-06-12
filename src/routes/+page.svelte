@@ -89,18 +89,13 @@
 		closeForm();
 		await loadDay();
 	}
-
-	async function removeIntake(id: string) {
-		await dayRepository.removeIntake(selectedDate, id);
-		await loadDay();
-	}
 </script>
 
 <section class="flex flex-1 flex-col gap-4">
 	<DateNav date={selectedDate} onPrev={goPrev} onNext={goNext} onToday={goToday} />
 
 	{#if day}
-		<IntakeTable intakes={day.intakes} onRemove={removeIntake} />
+		<IntakeTable intakes={day.intakes} date={selectedDate} />
 
 		<div class="flex flex-col items-center rounded-xl border border-emerald-500/30 bg-emerald-950/30 px-4 py-6 text-center shadow-lg shadow-emerald-500/10">
 			<p class="text-xs uppercase tracking-wide text-zinc-400">{displayLabel}</p>

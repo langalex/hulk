@@ -22,6 +22,7 @@
 	});
 
 	const isSettings = $derived(page.url.pathname.startsWith('/settings'));
+	const isEditIntake = $derived(page.url.pathname.startsWith('/intake/'));
 </script>
 
 <svelte:head>
@@ -32,7 +33,7 @@
 	<header class="sticky top-0 z-10 border-b border-zinc-800 bg-zinc-950/95 px-4 py-3 backdrop-blur">
 		<div class="mx-auto flex max-w-lg items-center justify-between">
 			<a href={resolve('/')} class="text-lg font-bold tracking-tight text-emerald-400">Hulk</a>
-			{#if isSettings}
+			{#if isSettings || isEditIntake}
 				<a href={resolve('/')} class="text-sm text-zinc-400 hover:text-zinc-200">Today</a>
 			{:else}
 				<a href={resolve('/settings')} class="text-sm text-zinc-400 hover:text-zinc-200">Settings</a>

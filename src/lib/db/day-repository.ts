@@ -42,6 +42,20 @@ export async function addIntake(
 	await db.put(doc);
 }
 
+export async function updateIntake(
+	date: string,
+	id: string,
+	entry: Omit<IntakeEntry, 'id'>
+): Promise<void> {
+	const db = getDb();
+	const doc = await getDay(date);
+	const index = doc.intakes.findIndex((i) => i.id === id);
+	if (index === -1) return;
+	doc.intakes[index] = { ...entry, id };
+	doc.intakes = [...doc.intakes].sort((a, b) => a.time.localeCompare(b.time));
+	await db.put(doc);
+}
+
 export async function removeIntake(date: string, id: string): Promise<void> {
 	const db = getDb();
 	const doc = await getDay(date);

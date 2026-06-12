@@ -7,9 +7,11 @@
 		description: string;
 		grams: string;
 		multiplier: string;
+		heading?: string;
 		onSubmit: () => void;
 		onCancel: () => void;
 		onSelectPreset: (preset: Preset) => void;
+		onDelete?: () => void;
 	}
 
 	let {
@@ -18,9 +20,11 @@
 		description = $bindable(),
 		grams = $bindable(),
 		multiplier = $bindable(),
+		heading = 'Add intake',
 		onSubmit,
 		onCancel,
-		onSelectPreset
+		onSelectPreset,
+		onDelete
 	}: Props = $props();
 
 	function handleSubmit(e: SubmitEvent) {
@@ -31,10 +35,10 @@
 
 <form
 	class="space-y-4 rounded-xl border border-zinc-800 bg-zinc-900 p-4"
-	aria-label="Add protein intake"
+	aria-label={heading}
 	onsubmit={handleSubmit}
 >
-	<h2 class="text-base font-semibold text-zinc-100">Add intake</h2>
+	<h2 class="text-base font-semibold text-zinc-100">{heading}</h2>
 
 	{#if presets.length > 0}
 		<div class="space-y-2">
@@ -114,4 +118,14 @@
 			Cancel
 		</button>
 	</div>
+
+	{#if onDelete}
+		<button
+			type="button"
+			class="h-11 w-full rounded-lg border border-red-900/50 text-red-400 active:bg-red-950/40"
+			onclick={onDelete}
+		>
+			Delete
+		</button>
+	{/if}
 </form>

@@ -2,7 +2,7 @@ import PouchDB from 'pouchdb';
 import MemoryAdapter from 'pouchdb-adapter-memory';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { dayId } from './ids';
-import { addIntake, getDay, removeIntake } from './day-repository';
+import { addIntake, getDay, removeIntake, updateIntake } from './day-repository';
 import { setProteinGoal } from './settings-repository';
 import { clearDbSingleton, resetDbForTests } from './pouch';
 
@@ -43,6 +43,32 @@ describe('day-repository', () => {
 
 		const after = await getDay('2026-06-12');
 		expect(after.intakes).toHaveLength(0);
+	});
+
+	it('updates an existing intake', async () => {
+		await addIntake('2026-06-12', {
+			id: 'intake-1',
+			time: '08:00',
+			description: 'Breakfast',
+			grams: 20
+		});
+		await updateIntake('2026-06-12', 'intake-1', {
+			time: '09:00',
+			description: 'Late breakfast',
+			grams: 30,
+			multiplier: 1
+		});
+
+		const day = await getDay('2026-06-12');
+		expect(day.intakes).toEqual([
+			{
+				id: 'intake-1',
+				time: '09:00',
+				description: 'Late breakfast',
+				grams: 30,
+				multiplier: 1
+			}
+		]);
 	});
 
 	it('stores current protein goal on first intake of the day', async () => {
