@@ -1,6 +1,7 @@
 <script lang="ts">
 	import './layout.css';
 	import { browser } from '$app/environment';
+	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { initPouchDb } from '$lib/db/pouch.client';
 
@@ -20,11 +21,11 @@
 <div class="flex min-h-dvh flex-col bg-zinc-950 text-zinc-100">
 	<header class="sticky top-0 z-10 border-b border-zinc-800 bg-zinc-950/95 px-4 py-3 backdrop-blur">
 		<div class="mx-auto flex max-w-lg items-center justify-between">
-			<a href="/" class="text-lg font-bold tracking-tight text-emerald-400">Hulk</a>
+			<a href={resolve('/')} class="text-lg font-bold tracking-tight text-emerald-400">Hulk</a>
 			{#if isSettings}
-				<a href="/" class="text-sm text-zinc-400 hover:text-zinc-200">Today</a>
+				<a href={resolve('/')} class="text-sm text-zinc-400 hover:text-zinc-200">Today</a>
 			{:else}
-				<a href="/settings" class="text-sm text-zinc-400 hover:text-zinc-200">Settings</a>
+				<a href={resolve('/settings')} class="text-sm text-zinc-400 hover:text-zinc-200">Settings</a>
 			{/if}
 		</div>
 	</header>

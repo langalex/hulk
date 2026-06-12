@@ -3,12 +3,19 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 import { defineConfig } from 'vitest/config';
 
+const basePath = process.env.BASE_PATH ?? '';
+
 export default defineConfig({
 	plugins: [
 		tailwindcss(),
 		sveltekit(),
 		SvelteKitPWA({
 			registerType: 'autoUpdate',
+			kit: {
+				base: basePath || '/',
+				adapterFallback: basePath ? `${basePath}/` : '/',
+				trailingSlash: 'always'
+			},
 			manifest: {
 				name: 'Hulk',
 				short_name: 'Hulk',
@@ -16,7 +23,7 @@ export default defineConfig({
 				theme_color: '#18181b',
 				background_color: '#18181b',
 				display: 'standalone',
-				start_url: process.env.BASE_PATH ? `${process.env.BASE_PATH}/` : '/'
+				start_url: basePath ? `${basePath}/` : '/'
 			}
 		})
 	],
