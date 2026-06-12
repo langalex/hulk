@@ -1,23 +1,46 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import * as presetRepository from '$lib/db/preset-repository';
+	import * as settingsRepository from '$lib/db/settings-repository';
 	import { subscribeToChanges } from '$lib/db/pouch';
 	import type { Preset } from '$lib/db/types';
 
 	let presets = $state<Preset[]>([]);
 	let description = $state('');
 	let grams = $state('');
+	let proteinGoal = $state('');
+	let savedProteinGoal = $state<number | null>(null);
 
 	async function loadPresets() {
 		presets = await presetRepository.getPresets();
 	}
 
+	async function loadProteinGoal() {
+		const goal = await settingsRepository.getProteinGoal();
+		savedProteinGoal = goal;
+		proteinGoal = goal === null ? '' : String(goal);
+	}
+
+	async function loadSettings() {
+		await Promise.all([loadPresets(), loadProteinGoal()]);
+	}
+
 	onMount(() => {
-		void loadPresets();
+		void loadSettings();
 		return subscribeToChanges(() => {
-			void loadPresets();
+			void loadSettings();
 		});
 	});
+
+	async function saveProteinGoal(e: SubmitEvent) {
+		e.preventDefault();
+		const value = Number(proteinGoal);
+		if (Number.isNaN(value) || value < 0) return;
+		if (savedProteinGoal === value) return;
+
+		await settingsRepository.setProteinGoal(value);
+		await loadProteinGoal();
+	}
 
 	async function addPreset(e: SubmitEvent) {
 		e.preventDefault();
@@ -41,7 +64,39 @@
 
 <section class="space-y-6">
 	<div>
-		<h1 class="text-xl font-semibold text-zinc-100">Preset intakes</h1>
+		<h1 class="text-xl font-semibold text-zinc-100">Settings</h1>
+	</div>
+
+	<form
+		class="space-y-3 rounded-xl border border-zinc-800 bg-zinc-900 p-4"
+		onsubmit={saveProteinGoal}
+	>
+		<h2 class="text-sm font-medium text-zinc-300">Daily protein goal</h2>
+		<p class="text-sm text-zinc-400">
+			The app badge shows how many grams you still need today. Changing the goal updates today only.
+		</p>
+		<label class="block space-y-1">
+			<span class="text-xs text-zinc-400">Goal (grams)</span>
+			<input
+				type="number"
+				bind:value={proteinGoal}
+				required
+				min="0"
+				step="1"
+				placeholder="e.g. 150"
+				class="h-11 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 text-zinc-100"
+			/>
+		</label>
+		<button
+			type="submit"
+			class="h-11 w-full rounded-lg bg-emerald-600 font-medium text-white active:bg-emerald-500"
+		>
+			Save goal
+		</button>
+	</form>
+
+	<div>
+		<h2 class="text-lg font-semibold text-zinc-100">Preset intakes</h2>
 		<p class="mt-1 text-sm text-zinc-400">
 			Create shortcuts you can pick when logging protein on the daily overview.
 		</p>

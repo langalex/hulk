@@ -1,5 +1,6 @@
 import { dayId } from './ids';
 import { getDb } from './pouch';
+import * as settingsRepository from './settings-repository';
 import type { DayDocument, IntakeEntry } from './types';
 
 function emptyDay(date: string): DayDocument {
@@ -24,6 +25,12 @@ export async function addIntake(
 ): Promise<void> {
 	const db = getDb();
 	const doc = await getDay(date);
+	if (doc.goalGrams === undefined) {
+		const goal = await settingsRepository.getProteinGoal();
+		if (goal !== null) {
+			doc.goalGrams = goal;
+		}
+	}
 	const intake: IntakeEntry = {
 		id: entry.id ?? crypto.randomUUID(),
 		time: entry.time,

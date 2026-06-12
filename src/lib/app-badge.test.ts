@@ -1,5 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { setAppBadgeGrams } from './app-badge';
+import { remainingGoalGrams, setAppBadgeGrams, syncTodayAppBadge } from './app-badge';
+
+vi.mock('$lib/db/day-repository', () => ({
+	getDay: vi.fn()
+}));
+
+import * as dayRepository from '$lib/db/day-repository';
 
 describe('setAppBadgeGrams', () => {
 	const setAppBadge = vi.fn().mockResolvedValue(undefined);
@@ -45,5 +51,67 @@ describe('setAppBadgeGrams', () => {
 		vi.stubGlobal('Notification', { permission: 'denied', requestPermission });
 		await setAppBadgeGrams(10);
 		expect(setAppBadge).not.toHaveBeenCalled();
+	});
+});
+
+describe('remainingGoalGrams', () => {
+	it('returns remaining grams until goal', () => {
+		expect(remainingGoalGrams(150, 42)).toBe(108);
+	});
+
+	it('returns zero when goal is reached', () => {
+		expect(remainingGoalGrams(150, 150)).toBe(0);
+	});
+
+	it('returns zero when intake exceeds goal', () => {
+		expect(remainingGoalGrams(150, 160)).toBe(0);
+	});
+});
+
+describe('syncTodayAppBadge', () => {
+	const setAppBadge = vi.fn().mockResolvedValue(undefined);
+	const clearAppBadge = vi.fn().mockResolvedValue(undefined);
+
+	beforeEach(() => {
+		vi.stubGlobal('navigator', { setAppBadge, clearAppBadge });
+		vi.stubGlobal('Notification', { permission: 'granted' });
+		vi.mocked(dayRepository.getDay).mockReset();
+		setAppBadge.mockClear();
+		clearAppBadge.mockClear();
+	});
+
+	it('shows remaining grams until goal is reached', async () => {
+		vi.mocked(dayRepository.getDay).mockResolvedValue({
+			_id: 'day:2026-06-12',
+			date: '2026-06-12',
+			goalGrams: 150,
+			intakes: [{ id: '1', time: '08:00', description: 'Shake', grams: 42 }]
+		});
+
+		await syncTodayAppBadge();
+		expect(setAppBadge).toHaveBeenCalledWith(108);
+	});
+
+	it('clears badge when goal is reached', async () => {
+		vi.mocked(dayRepository.getDay).mockResolvedValue({
+			_id: 'day:2026-06-12',
+			date: '2026-06-12',
+			goalGrams: 150,
+			intakes: [{ id: '1', time: '08:00', description: 'Shake', grams: 150 }]
+		});
+
+		await syncTodayAppBadge();
+		expect(clearAppBadge).toHaveBeenCalled();
+	});
+
+	it('clears badge when today has no goal', async () => {
+		vi.mocked(dayRepository.getDay).mockResolvedValue({
+			_id: 'day:2026-06-12',
+			date: '2026-06-12',
+			intakes: []
+		});
+
+		await syncTodayAppBadge();
+		expect(clearAppBadge).toHaveBeenCalled();
 	});
 });

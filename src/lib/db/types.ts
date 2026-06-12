@@ -10,6 +10,7 @@ export interface DayDocument {
 	_id: string;
 	date: string;
 	intakes: IntakeEntry[];
+	goalGrams?: number;
 }
 
 export interface Preset {
@@ -23,4 +24,9 @@ export interface PresetsDocument {
 	presets: Preset[];
 }
 
-export type PouchDoc = DayDocument | PresetsDocument;
+export interface AppSettingsDocument {
+	_id: 'settings:app';
+	proteinGoalGrams: number | null;
+}
+
+export type PouchDoc = DayDocument | PresetsDocument | AppSettingsDocument;

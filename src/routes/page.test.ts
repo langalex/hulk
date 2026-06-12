@@ -144,6 +144,35 @@ describe('daily overview page', () => {
 		});
 	});
 
+	it('shows remaining grams when day has a goal', async () => {
+		vi.mocked(dayRepository.getDay).mockResolvedValue({
+			...emptyDay,
+			goalGrams: 150,
+			intakes: [{ id: '1', time: '10:00', description: 'Shake', grams: 42 }]
+		});
+
+		render(Page);
+
+		await waitFor(() => {
+			expect(screen.getByText('Remaining protein')).toBeInTheDocument();
+		});
+		expect(screen.getByText('108 g')).toBeInTheDocument();
+	});
+
+	it('shows total intake when day has no goal', async () => {
+		vi.mocked(dayRepository.getDay).mockResolvedValue({
+			...emptyDay,
+			intakes: [{ id: '1', time: '10:00', description: 'Shake', grams: 42 }]
+		});
+
+		render(Page);
+
+		await waitFor(() => {
+			expect(screen.getByText('Total protein')).toBeInTheDocument();
+		});
+		expect(screen.getByText('Total protein').nextElementSibling).toHaveTextContent('42 g');
+	});
+
 	it('shows the multiplier in the overview', async () => {
 		vi.mocked(dayRepository.getDay).mockResolvedValue({
 			...emptyDay,
