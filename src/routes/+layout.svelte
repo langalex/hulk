@@ -3,13 +3,23 @@
 	import { browser } from '$app/environment';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
+	import { onMount } from 'svelte';
+	import { syncTodayAppBadge } from '$lib/app-badge';
 	import { initPouchDb } from '$lib/db/pouch.client';
+	import { subscribeToChanges } from '$lib/db/pouch';
 
 	if (browser) {
 		initPouchDb();
 	}
 
 	let { children } = $props();
+
+	onMount(() => {
+		void syncTodayAppBadge();
+		return subscribeToChanges(() => {
+			void syncTodayAppBadge();
+		});
+	});
 
 	const isSettings = $derived(page.url.pathname.startsWith('/settings'));
 </script>
