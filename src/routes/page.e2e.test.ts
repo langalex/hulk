@@ -5,7 +5,17 @@ import MemoryAdapter from 'pouchdb-adapter-memory';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import Page from './+page.svelte';
 import SettingsPage from './settings/+page.svelte';
+import EditIntakeView from '$lib/components/EditIntakeView.svelte';
+import { addIntake, getDay } from '$lib/db/day-repository';
 import { clearDbSingleton, resetDbForTests } from '$lib/db/pouch';
+
+const { gotoMock } = vi.hoisted(() => ({
+	gotoMock: vi.fn(() => Promise.resolve())
+}));
+
+vi.mock('$app/navigation', () => ({
+	goto: gotoMock
+}));
 
 PouchDB.plugin(MemoryAdapter);
 
@@ -15,6 +25,7 @@ describe('daily overview page e2e', () => {
 	beforeEach(() => {
 		db = new PouchDB(`test-e2e-${Date.now()}`, { adapter: 'memory' });
 		resetDbForTests(db as never);
+		gotoMock.mockReset();
 		vi.useFakeTimers();
 		vi.setSystemTime(new Date('2026-06-12T10:00:00'));
 	});
@@ -77,5 +88,59 @@ describe('daily overview page e2e', () => {
 			expect(screen.getByText('Shake')).toBeInTheDocument();
 		});
 		expect(screen.getByText('Remaining protein').nextElementSibling).toHaveTextContent('108 g');
+	});
+
+	it('edits and deletes an intake', async () => {
+		vi.useRealTimers();
+		const user = userEvent.setup();
+		await addIntake('2026-06-12', {
+			id: 'intake-1',
+			time: '10:00',
+			description: 'Shake',
+			grams: 25
+		});
+
+		const editView = render(EditIntakeView, { props: { date: '2026-06-12', id: 'intake-1' } });
+
+		await waitFor(() => {
+			expect(screen.getByLabelText(/^Description$/i)).toHaveValue('Shake');
+		});
+
+		const descriptionInput = screen.getByLabelText(/^Description$/i);
+		await user.click(descriptionInput);
+		await user.keyboard('{Control>}a{/Control}Large shake');
+		const gramsInput = screen.getByLabelText(/^Grams$/i);
+		await user.click(gramsInput);
+		await user.keyboard('{Control>}a{/Control}40');
+		await user.click(screen.getByRole('button', { name: 'Save' }));
+
+		await waitFor(() => {
+			expect(gotoMock).toHaveBeenCalled();
+		});
+
+		const afterEdit = await getDay('2026-06-12');
+		expect(afterEdit.intakes[0]).toMatchObject({
+			description: 'Large shake',
+			grams: 40
+		});
+
+		editView.unmount();
+		gotoMock.mockClear();
+		render(EditIntakeView, { props: { date: '2026-06-12', id: 'intake-1' } });
+
+		await waitFor(() => {
+			expect(screen.getByRole('button', { name: 'Delete' })).toBeInTheDocument();
+		});
+
+		await user.click(screen.getByRole('button', { name: 'Delete' }));
+		expect(screen.getByRole('dialog')).toBeInTheDocument();
+		await user.click(screen.getByRole('button', { name: 'Remove' }));
+
+		await waitFor(() => {
+			expect(gotoMock).toHaveBeenCalled();
+		});
+
+		const afterDelete = await getDay('2026-06-12');
+		expect(afterDelete.intakes).toHaveLength(0);
 	});
 });

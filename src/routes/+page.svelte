@@ -89,23 +89,13 @@
 		closeForm();
 		await loadDay();
 	}
-
-	async function removeIntake(id: string) {
-		await dayRepository.removeIntake(selectedDate, id);
-		await loadDay();
-	}
 </script>
 
-<section class="flex flex-1 flex-col gap-4">
+<section class="flex flex-1 flex-col gap-4 pb-44">
 	<DateNav date={selectedDate} onPrev={goPrev} onNext={goNext} onToday={goToday} />
 
 	{#if day}
-		<IntakeTable intakes={day.intakes} onRemove={removeIntake} />
-
-		<div class="flex flex-col items-center rounded-xl border border-emerald-500/30 bg-emerald-950/30 px-4 py-6 text-center shadow-lg shadow-emerald-500/10">
-			<p class="text-xs uppercase tracking-wide text-zinc-400">{displayLabel}</p>
-			<p class="text-5xl font-extrabold tabular-nums text-emerald-400">{displayGrams} g</p>
-		</div>
+		<IntakeTable intakes={day.intakes} date={selectedDate} />
 	{/if}
 
 	{#if showForm}
@@ -122,16 +112,26 @@
 	{/if}
 </section>
 
-{#if !showForm}
-	<div class="fixed inset-x-0 bottom-0 border-t border-zinc-800 bg-zinc-950/95 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur">
-		<div class="mx-auto max-w-lg">
-			<button
-				type="button"
-				class="h-12 w-full rounded-lg bg-emerald-600 text-base font-semibold text-white active:bg-emerald-500"
-				onclick={openForm}
-			>
-				Add protein
-			</button>
+{#if day}
+	<div
+		class="fixed inset-x-0 bottom-0 border-t border-zinc-800 bg-zinc-950/95 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur"
+	>
+		<div
+			class="mx-auto max-w-lg overflow-hidden rounded-xl border border-emerald-500/30 bg-emerald-950/30 shadow-lg shadow-emerald-500/10"
+		>
+			<div class="px-4 py-4 text-center">
+				<p class="text-xs uppercase tracking-wide text-zinc-400">{displayLabel}</p>
+				<p class="text-4xl font-extrabold tabular-nums text-emerald-400">{displayGrams} g</p>
+			</div>
+			{#if !showForm}
+				<button
+					type="button"
+					class="h-12 w-full border-t border-emerald-500/20 bg-emerald-600 text-base font-semibold text-white active:bg-emerald-500"
+					onclick={openForm}
+				>
+					Add protein
+				</button>
+			{/if}
 		</div>
 	</div>
 {/if}

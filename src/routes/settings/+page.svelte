@@ -73,7 +73,7 @@
 	>
 		<h2 class="text-sm font-medium text-zinc-300">Daily protein goal</h2>
 		<p class="text-sm text-zinc-400">
-			The app badge shows how many grams you still need today. Changing the goal updates today only.
+			After setting a goal, remaining instead of total protein is shown.
 		</p>
 		<label class="block space-y-1">
 			<span class="text-xs text-zinc-400">Goal (grams)</span>

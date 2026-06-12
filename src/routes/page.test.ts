@@ -7,7 +7,8 @@ import type { DayDocument, Preset } from '$lib/db/types';
 vi.mock('$lib/db/day-repository', () => ({
 	getDay: vi.fn(),
 	addIntake: vi.fn(),
-	removeIntake: vi.fn()
+	removeIntake: vi.fn(),
+	updateIntake: vi.fn()
 }));
 
 vi.mock('$lib/db/preset-repository', () => ({
@@ -104,6 +105,10 @@ describe('daily overview page', () => {
 
 		render(Page);
 
+		await waitFor(() => {
+			expect(screen.getByRole('button', { name: 'Add protein' })).toBeInTheDocument();
+		});
+
 		await user.click(screen.getByRole('button', { name: 'Add protein' }));
 		await user.type(screen.getByLabelText(/^Description$/i), 'Shake');
 		await user.clear(screen.getByLabelText(/^Grams$/i));
@@ -125,6 +130,10 @@ describe('daily overview page', () => {
 		vi.setSystemTime(new Date('2026-06-12T10:00:00'));
 		const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
 		render(Page);
+
+		await waitFor(() => {
+			expect(screen.getByRole('button', { name: 'Add protein' })).toBeInTheDocument();
+		});
 
 		await user.click(screen.getByRole('button', { name: 'Add protein' }));
 		await user.type(screen.getByLabelText(/^Description$/i), 'Shake');
@@ -186,8 +195,7 @@ describe('daily overview page', () => {
 		});
 	});
 
-	it('confirms before removing an intake', async () => {
-		const user = userEvent.setup();
+	it('links each intake to its edit page', async () => {
 		vi.mocked(dayRepository.getDay).mockResolvedValue({
 			...emptyDay,
 			intakes: [{ id: '1', time: '10:00', description: 'Shake', grams: 25 }]
@@ -196,23 +204,12 @@ describe('daily overview page', () => {
 		render(Page);
 
 		await waitFor(() => {
-			expect(screen.getByRole('button', { name: 'Remove Shake' })).toBeInTheDocument();
+			expect(screen.getByRole('link', { name: 'Edit Shake' })).toBeInTheDocument();
 		});
-
-		await user.click(screen.getByRole('button', { name: 'Remove Shake' }));
-		expect(screen.getByRole('dialog')).toBeInTheDocument();
-		expect(dayRepository.removeIntake).not.toHaveBeenCalled();
-
-		await user.click(screen.getByRole('button', { name: 'Cancel' }));
-		expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-		expect(dayRepository.removeIntake).not.toHaveBeenCalled();
-
-		await user.click(screen.getByRole('button', { name: 'Remove Shake' }));
-		await user.click(screen.getByRole('button', { name: 'Remove' }));
-
-		await waitFor(() => {
-			expect(dayRepository.removeIntake).toHaveBeenCalledWith('2026-06-12', '1');
-		});
+		expect(screen.getByRole('link', { name: 'Edit Shake' })).toHaveAttribute(
+			'href',
+			'/intake/2026-06-12/1/'
+		);
 	});
 
 	it('applies preset when chip is clicked', async () => {
