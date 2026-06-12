@@ -3,6 +3,7 @@
 	import AddIntakeForm from '$lib/components/AddIntakeForm.svelte';
 	import DateNav from '$lib/components/DateNav.svelte';
 	import IntakeTable from '$lib/components/IntakeTable.svelte';
+	import { remainingGoalGrams } from '$lib/app-badge';
 	import { addDays, currentTime, formatDate } from '$lib/dates';
 	import * as dayRepository from '$lib/db/day-repository';
 	import * as presetRepository from '$lib/db/preset-repository';
@@ -19,6 +20,13 @@
 	let formMultiplier = $state('1');
 
 	const total = $derived(day?.intakes.reduce((sum, i) => sum + i.grams, 0) ?? 0);
+	const hasGoal = $derived(day?.goalGrams !== undefined);
+	const displayGrams = $derived(
+		hasGoal && day?.goalGrams !== undefined
+			? remainingGoalGrams(day.goalGrams, total)
+			: total
+	);
+	const displayLabel = $derived(hasGoal ? 'Remaining protein' : 'Total protein');
 
 	async function loadDay() {
 		day = await dayRepository.getDay(selectedDate);
@@ -95,8 +103,8 @@
 		<IntakeTable intakes={day.intakes} onRemove={removeIntake} />
 
 		<div class="flex flex-col items-center rounded-xl border border-emerald-500/30 bg-emerald-950/30 px-4 py-6 text-center shadow-lg shadow-emerald-500/10">
-			<p class="text-xs uppercase tracking-wide text-zinc-400">Total protein</p>
-			<p class="text-5xl font-extrabold tabular-nums text-emerald-400">{total} g</p>
+			<p class="text-xs uppercase tracking-wide text-zinc-400">{displayLabel}</p>
+			<p class="text-5xl font-extrabold tabular-nums text-emerald-400">{displayGrams} g</p>
 		</div>
 	{/if}
 

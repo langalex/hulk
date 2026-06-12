@@ -10,11 +10,17 @@ vi.mock('$lib/db/preset-repository', () => ({
 	removePreset: vi.fn()
 }));
 
+vi.mock('$lib/db/settings-repository', () => ({
+	getProteinGoal: vi.fn(),
+	setProteinGoal: vi.fn()
+}));
+
 vi.mock('$lib/db/pouch', () => ({
 	subscribeToChanges: vi.fn(() => () => {})
 }));
 
 import * as presetRepository from '$lib/db/preset-repository';
+import * as settingsRepository from '$lib/db/settings-repository';
 
 const seeded: Preset[] = [
 	{ id: 'p1', description: 'Protein shake', grams: 30 },
@@ -25,6 +31,7 @@ describe('settings page', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 		vi.mocked(presetRepository.getPresets).mockResolvedValue(seeded);
+		vi.mocked(settingsRepository.getProteinGoal).mockResolvedValue(150);
 	});
 
 	it('renders preset list', async () => {
@@ -33,8 +40,27 @@ describe('settings page', () => {
 		await waitFor(() => {
 			expect(screen.getByText('Protein shake')).toBeInTheDocument();
 		});
+		expect(screen.getByDisplayValue('150')).toBeInTheDocument();
 		expect(screen.getByText('Greek yogurt')).toBeInTheDocument();
 		expect(screen.getByText('30 g')).toBeInTheDocument();
+	});
+
+	it('saves protein goal on submit', async () => {
+		const user = userEvent.setup();
+		render(Page);
+
+		await waitFor(() => {
+			expect(screen.getByDisplayValue('150')).toBeInTheDocument();
+		});
+
+		const goalInput = screen.getByPlaceholderText('e.g. 150');
+		await user.clear(goalInput);
+		await user.type(goalInput, '180');
+		await user.click(screen.getByRole('button', { name: 'Save goal' }));
+
+		await waitFor(() => {
+			expect(settingsRepository.setProteinGoal).toHaveBeenCalledWith(180);
+		});
 	});
 
 	it('adds a preset on submit', async () => {

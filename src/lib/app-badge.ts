@@ -18,8 +18,21 @@ export async function setAppBadgeGrams(grams: number): Promise<void> {
 	}
 }
 
+function intakeTotalGrams(intakes: { grams: number }[]): number {
+	return intakes.reduce((sum, intake) => sum + intake.grams, 0);
+}
+
+export function remainingGoalGrams(goalGrams: number, totalGrams: number): number {
+	return Math.max(0, goalGrams - totalGrams);
+}
+
 export async function syncTodayAppBadge(): Promise<void> {
 	const day = await dayRepository.getDay(formatDate(new Date()));
-	const total = day.intakes.reduce((sum, intake) => sum + intake.grams, 0);
-	await setAppBadgeGrams(total);
+	if (day.goalGrams === undefined) {
+		await setAppBadgeGrams(0);
+		return;
+	}
+
+	const remaining = remainingGoalGrams(day.goalGrams, intakeTotalGrams(day.intakes));
+	await setAppBadgeGrams(remaining);
 }
