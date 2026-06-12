@@ -16,7 +16,7 @@ export default defineConfig({
 				theme_color: '#18181b',
 				background_color: '#18181b',
 				display: 'standalone',
-				start_url: '/'
+				start_url: process.env.BASE_PATH ? `${process.env.BASE_PATH}/` : '/'
 			}
 		})
 	],

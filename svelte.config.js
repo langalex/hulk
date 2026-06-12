@@ -5,7 +5,11 @@ const config = {
 	kit: {
 		adapter: adapter({
 			fallback: 'index.html'
-		})
+		}),
+		paths: {
+			base: process.env.BASE_PATH ?? '',
+			relative: false
+		}
 	}
 };
 
