@@ -94,9 +94,9 @@
 	{#if day}
 		<IntakeTable intakes={day.intakes} onRemove={removeIntake} />
 
-		<div class="rounded-lg bg-zinc-900 px-4 py-3">
-			<p class="text-xs uppercase tracking-wide text-zinc-500">Total protein</p>
-			<p class="text-3xl font-bold tabular-nums text-emerald-400">{total} g</p>
+		<div class="flex flex-col items-center rounded-xl border border-emerald-500/30 bg-emerald-950/30 px-4 py-6 text-center shadow-lg shadow-emerald-500/10">
+			<p class="text-xs uppercase tracking-wide text-zinc-400">Total protein</p>
+			<p class="text-5xl font-extrabold tabular-nums text-emerald-400">{total} g</p>
 		</div>
 	{/if}
 
