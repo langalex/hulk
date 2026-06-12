@@ -1,0 +1,52 @@
+import tailwindcss from '@tailwindcss/vite';
+import { sveltekit } from '@sveltejs/kit/vite';
+import { SvelteKitPWA } from '@vite-pwa/sveltekit';
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+	plugins: [
+		tailwindcss(),
+		sveltekit(),
+		SvelteKitPWA({
+			registerType: 'autoUpdate',
+			manifest: {
+				name: 'Hulk',
+				short_name: 'Hulk',
+				description: 'Track daily protein intake',
+				theme_color: '#18181b',
+				background_color: '#18181b',
+				display: 'standalone',
+				start_url: '/'
+			}
+		})
+	],
+	define: {
+		global: 'globalThis'
+	},
+	test: {
+		expect: { requireAssertions: true },
+		projects: [
+			{
+				extends: './vite.config.ts',
+				test: {
+					name: 'server',
+					environment: 'node',
+					include: ['src/lib/**/*.{test,spec}.{js,ts}'],
+					exclude: ['src/routes/**/*']
+				}
+			},
+			{
+				extends: './vite.config.ts',
+				resolve: {
+					conditions: ['browser']
+				},
+				test: {
+					name: 'client',
+					environment: 'jsdom',
+					include: ['src/routes/**/*.test.{js,ts}'],
+					setupFiles: ['src/test-setup.ts']
+				}
+			}
+		]
+	}
+});
