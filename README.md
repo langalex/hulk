@@ -1,22 +1,16 @@
-# sv
+# Hulk
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A mobile-friendly progressive web app for tracking daily protein intake.
 
-## Creating a project
+## What it does
 
-If you're seeing this, you've probably already done this step. Congrats!
+Hulk helps you log how much protein you eat throughout the day and see your running total in grams.
 
-```sh
-# create a new project
-npx sv create my-app
-```
-
-To recreate this project with the same configuration:
-
-```sh
-# recreate this project
-npx sv@0.16.1 create --template minimal --types ts --add vitest="usages:unit" tailwindcss="plugins:none" sveltekit-adapter="adapter:static" --no-install .
-```
+- **Daily log** — Add intakes with a description, time, and gram amount. Browse previous days or jump back to today.
+- **Running total** — See the sum of all protein logged for the selected day at a glance.
+- **Presets** — Save common foods (e.g. a protein shake) in Settings and tap them when logging to fill in the details quickly. A multiplier lets you scale a preset (e.g. 2× a serving).
+- **Local-first** — Data is stored in the browser with PouchDB, so it works offline and stays on your device.
+- **Installable PWA** — Add Hulk to your home screen for quick access like a native app.
 
 ## Developing
 
@@ -38,5 +32,3 @@ npm run build
 ```
 
 You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
