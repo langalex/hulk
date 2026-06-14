@@ -18,6 +18,8 @@
 	let formDescription = $state('');
 	let formGrams = $state('');
 	let formMultiplier = $state('1');
+	let footerElement = $state<HTMLDivElement | undefined>();
+	let footerHeight = $state(0);
 
 	const total = $derived(day?.intakes.reduce((sum, i) => sum + i.grams, 0) ?? 0);
 	const hasGoal = $derived(day?.goalGrams !== undefined);
@@ -39,6 +41,16 @@
 	async function refresh() {
 		await Promise.all([loadDay(), loadPresets()]);
 	}
+
+	$effect(() => {
+		const element = footerElement;
+		if (!element) {
+			footerHeight = 0;
+			return;
+		}
+
+		footerHeight = element.getBoundingClientRect().height;
+	});
 
 	onMount(() => {
 		void refresh();
@@ -101,6 +113,7 @@
 	{#if showForm}
 		<AddIntakeForm
 			{presets}
+			{footerHeight}
 			bind:time={formTime}
 			bind:description={formDescription}
 			bind:grams={formGrams}
@@ -114,6 +127,7 @@
 
 {#if day}
 	<div
+		bind:this={footerElement}
 		class="fixed inset-x-0 bottom-0 border-t border-zinc-800 bg-zinc-950/95 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur"
 	>
 		<div
