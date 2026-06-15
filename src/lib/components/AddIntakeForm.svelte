@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Preset } from '$lib/db/types';
+	import { formatGrams } from '$lib/grams';
 
 	interface Props {
 		presets: Preset[];
@@ -50,7 +51,7 @@
 						class="rounded-full bg-zinc-800 px-3 py-2 text-xs text-zinc-200 active:bg-emerald-900"
 						onclick={() => onSelectPreset(preset)}
 					>
-						{preset.description} ({preset.grams} g)
+						{preset.description} ({formatGrams(preset.grams)} g)
 					</button>
 				{/each}
 			</div>

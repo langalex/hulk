@@ -4,6 +4,7 @@
 	import * as settingsRepository from '$lib/db/settings-repository';
 	import { subscribeToChanges } from '$lib/db/pouch';
 	import type { Preset } from '$lib/db/types';
+	import { formatGrams } from '$lib/grams';
 
 	let presets = $state<Preset[]>([]);
 	let description = $state('');
@@ -143,7 +144,7 @@
 				<li class="flex items-center justify-between gap-3 px-4 py-3">
 					<div>
 						<p class="font-medium text-zinc-100">{preset.description}</p>
-						<p class="text-sm tabular-nums text-zinc-400">{preset.grams} g</p>
+						<p class="text-sm tabular-nums text-zinc-400">{formatGrams(preset.grams)} g</p>
 					</div>
 					<button
 						type="button"
