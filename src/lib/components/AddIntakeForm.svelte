@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount, tick } from 'svelte';
 	import type { Preset } from '$lib/db/types';
 	import { formatGrams } from '$lib/grams';
 
@@ -9,6 +10,7 @@
 		grams: string;
 		multiplier: string;
 		heading?: string;
+		footerHeight?: number;
 		onSubmit: () => void;
 		onCancel: () => void;
 		onSelectPreset: (preset: Preset) => void;
@@ -22,15 +24,40 @@
 		grams = $bindable(),
 		multiplier = $bindable(),
 		heading = 'Add intake',
+		footerHeight = 0,
 		onSubmit,
 		onCancel,
 		onSelectPreset,
 		onDelete
 	}: Props = $props();
 
+	let submitButton: HTMLButtonElement | undefined;
+
+	function scrollSubmitIntoView() {
+		if (!submitButton) return;
+
+		const gap = 8;
+		const rect = submitButton.getBoundingClientRect();
+		const maxBottom = window.innerHeight - footerHeight - gap;
+		const scrollDelta = rect.bottom - maxBottom;
+
+		if (scrollDelta > 0) {
+			window.scrollBy({ top: scrollDelta, behavior: 'smooth' });
+		}
+	}
+
+	onMount(() => {
+		void tick().then(scrollSubmitIntoView);
+	});
+
 	function handleSubmit(e: SubmitEvent) {
 		e.preventDefault();
 		onSubmit();
+	}
+
+	function handleSelectPreset(preset: Preset) {
+		onSelectPreset(preset);
+		void tick().then(scrollSubmitIntoView);
 	}
 </script>
 
@@ -49,7 +76,7 @@
 					<button
 						type="button"
 						class="rounded-full bg-zinc-800 px-3 py-2 text-xs text-zinc-200 active:bg-emerald-900"
-						onclick={() => onSelectPreset(preset)}
+						onclick={() => handleSelectPreset(preset)}
 					>
 						{preset.description} ({formatGrams(preset.grams)} g)
 					</button>
@@ -106,6 +133,7 @@
 
 	<div class="flex gap-2 pt-1">
 		<button
+			bind:this={submitButton}
 			type="submit"
 			class="h-11 flex-1 rounded-lg bg-emerald-600 font-medium text-white active:bg-emerald-500"
 		>

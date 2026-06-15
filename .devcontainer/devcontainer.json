@@ -2,5 +2,15 @@
   "name": "Hulk",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:24",
   "forwardPorts": [],
-  "postCreateCommand": "npm install"
+  "postCreateCommand": "npm install",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "bradlc.vscode-tailwindcss",
+        "svelte.svelte-vscode"
+      ]
+    }
+  }
 }
