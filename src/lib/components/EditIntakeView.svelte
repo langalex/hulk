@@ -7,6 +7,7 @@
 	import * as presetRepository from '$lib/db/preset-repository';
 	import { subscribeToChanges } from '$lib/db/pouch';
 	import type { IntakeEntry, Preset } from '$lib/db/types';
+	import { formatGrams } from '$lib/grams';
 
 	interface Props {
 		date: string;
@@ -119,7 +120,7 @@
 		<div class="w-full max-w-sm rounded-xl border border-zinc-800 bg-zinc-900 p-4">
 			<h2 id="remove-intake-title" class="text-base font-semibold text-zinc-100">Remove intake?</h2>
 			<p class="mt-2 text-sm text-zinc-400">
-				{intake.description} ({intake.grams} g) will be deleted.
+				{intake.description} ({formatGrams(intake.grams)} g) will be deleted.
 			</p>
 			<div class="mt-4 flex gap-2">
 				<button

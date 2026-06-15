@@ -4,6 +4,7 @@
 	import DateNav from '$lib/components/DateNav.svelte';
 	import IntakeTable from '$lib/components/IntakeTable.svelte';
 	import { remainingGoalGrams } from '$lib/app-badge';
+	import { formatGrams } from '$lib/grams';
 	import { addDays, currentTime, formatDate } from '$lib/dates';
 	import * as dayRepository from '$lib/db/day-repository';
 	import * as presetRepository from '$lib/db/preset-repository';
@@ -135,7 +136,7 @@
 		>
 			<div class="px-4 py-4 text-center">
 				<p class="text-xs uppercase tracking-wide text-zinc-400">{displayLabel}</p>
-				<p class="text-4xl font-extrabold tabular-nums text-emerald-400">{displayGrams} g</p>
+				<p class="text-4xl font-extrabold tabular-nums text-emerald-400">{formatGrams(displayGrams)} g</p>
 			</div>
 			{#if !showForm}
 				<button

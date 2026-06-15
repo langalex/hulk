@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import type { IntakeEntry } from '$lib/db/types';
+	import { formatGrams } from '$lib/grams';
 
 	interface Props {
 		intakes: IntakeEntry[];
@@ -35,7 +36,7 @@
 								<span class="ml-1 text-xs text-zinc-500">×{intake.multiplier}</span>
 							{/if}
 						</td>
-						<td class="px-3 py-2 text-right tabular-nums">{intake.grams} g</td>
+						<td class="px-3 py-2 text-right tabular-nums">{formatGrams(intake.grams)} g</td>
 						<td class="px-2 py-2 text-right">
 							<a
 								href={resolve(`/intake/${date}/${intake.id}/`)}
