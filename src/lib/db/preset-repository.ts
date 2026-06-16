@@ -24,9 +24,7 @@ export async function getPresets(): Promise<Preset[]> {
   return sortPresets(doc.presets);
 }
 
-export async function addPreset(
-  preset: Omit<Preset, "id"> & { id?: string },
-): Promise<void> {
+export async function addPreset(preset: Omit<Preset, "id"> & { id?: string }): Promise<void> {
   const db = getDb();
   const doc = await getPresetsDoc();
   const item: Preset = {

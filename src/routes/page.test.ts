@@ -58,9 +58,7 @@ describe("daily overview page", () => {
     await waitFor(() => {
       expect(screen.getByText("Today")).toBeInTheDocument();
     });
-    expect(
-      screen.queryByRole("button", { name: "Go to today" }),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Go to today" })).not.toBeInTheDocument();
   });
 
   it("jumps back to today from another day", async () => {
@@ -108,9 +106,7 @@ describe("daily overview page", () => {
     render(Page);
 
     await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: "Add protein" }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Add protein" })).toBeInTheDocument();
     });
 
     await user.click(screen.getByRole("button", { name: "Add protein" }));
@@ -136,9 +132,7 @@ describe("daily overview page", () => {
     render(Page);
 
     await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: "Add protein" }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Add protein" })).toBeInTheDocument();
     });
 
     await user.click(screen.getByRole("button", { name: "Add protein" }));
@@ -185,9 +179,7 @@ describe("daily overview page", () => {
     await waitFor(() => {
       expect(screen.getByText("Total protein")).toBeInTheDocument();
     });
-    expect(
-      screen.getByText("Total protein").nextElementSibling,
-    ).toHaveTextContent("42 g");
+    expect(screen.getByText("Total protein").nextElementSibling).toHaveTextContent("42 g");
   });
 
   it("shows the multiplier in the overview", async () => {
@@ -222,9 +214,7 @@ describe("daily overview page", () => {
     render(Page);
 
     await waitFor(() => {
-      expect(
-        screen.getByRole("link", { name: "Edit Shake" }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: "Edit Shake" })).toBeInTheDocument();
     });
     expect(screen.getByRole("link", { name: "Edit Shake" })).toHaveAttribute(
       "href",
@@ -240,9 +230,7 @@ describe("daily overview page", () => {
     render(Page);
 
     await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: "Add protein" }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Add protein" })).toBeInTheDocument();
     });
 
     await user.click(screen.getByRole("button", { name: "Add protein" }));
