@@ -83,7 +83,7 @@
 
 	{#if intake}
 		<AddIntakeForm
-			{presets}
+			presets={[]}
 			heading="Edit intake"
 			bind:time={formTime}
 			bind:description={formDescription}
