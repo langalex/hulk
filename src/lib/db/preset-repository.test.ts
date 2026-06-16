@@ -1,46 +1,59 @@
-import PouchDB from 'pouchdb';
-import MemoryAdapter from 'pouchdb-adapter-memory';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { PRESETS_ID } from './ids';
-import { addPreset, getPresets, removePreset } from './preset-repository';
-import { clearDbSingleton, resetDbForTests } from './pouch';
+import PouchDB from "pouchdb";
+import MemoryAdapter from "pouchdb-adapter-memory";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { PRESETS_ID } from "./ids";
+import { addPreset, getPresets, removePreset } from "./preset-repository";
+import { clearDbSingleton, resetDbForTests } from "./pouch";
 
 PouchDB.plugin(MemoryAdapter);
 
-describe('preset-repository', () => {
-	let db: PouchDB.Database;
+describe("preset-repository", () => {
+  let db: PouchDB.Database;
 
-	beforeEach(() => {
-		db = new PouchDB('test-presets', { adapter: 'memory' });
-		resetDbForTests(db as never);
-	});
+  beforeEach(() => {
+    db = new PouchDB("test-presets", { adapter: "memory" });
+    resetDbForTests(db as never);
+  });
 
-	afterEach(async () => {
-		await db.destroy();
-		clearDbSingleton();
-	});
+  afterEach(async () => {
+    await db.destroy();
+    clearDbSingleton();
+  });
 
-	it('returns empty list when document is missing', async () => {
-		expect(await getPresets()).toEqual([]);
-	});
+  it("returns empty list when document is missing", async () => {
+    expect(await getPresets()).toEqual([]);
+  });
 
-	it('adds presets to settings document', async () => {
-		await addPreset({ description: 'Shake', grams: 30 });
-		const presets = await getPresets();
-		expect(presets).toHaveLength(1);
-		expect(presets[0].description).toBe('Shake');
-		expect(presets[0].grams).toBe(30);
-	});
+  it("adds presets to settings document", async () => {
+    await addPreset({ description: "Shake", grams: 30 });
+    const presets = await getPresets();
+    expect(presets).toHaveLength(1);
+    expect(presets[0].description).toBe("Shake");
+    expect(presets[0].grams).toBe(30);
+  });
 
-	it('removes preset by id', async () => {
-		await addPreset({ id: 'preset-1', description: 'Shake', grams: 30 });
-		await removePreset('preset-1');
-		expect(await getPresets()).toEqual([]);
-	});
+  it("removes preset by id", async () => {
+    await addPreset({ id: "preset-1", description: "Shake", grams: 30 });
+    await removePreset("preset-1");
+    expect(await getPresets()).toEqual([]);
+  });
 
-	it('stores presets under settings:presets id', async () => {
-		await addPreset({ description: 'Yogurt', grams: 15 });
-		const doc = await db.get(PRESETS_ID);
-		expect(doc._id).toBe(PRESETS_ID);
-	});
+  it("stores presets under settings:presets id", async () => {
+    await addPreset({ description: "Yogurt", grams: 15 });
+    const doc = await db.get(PRESETS_ID);
+    expect(doc._id).toBe(PRESETS_ID);
+  });
+
+  it("returns presets sorted by first letter word in description", async () => {
+    await addPreset({ id: "p1", description: "2x Yogurt", grams: 15 });
+    await addPreset({ id: "p2", description: "1 Protein shake", grams: 30 });
+    await addPreset({ id: "p3", description: "Greek yogurt", grams: 20 });
+
+    const presets = await getPresets();
+    expect(presets.map((p) => p.description)).toEqual([
+      "Greek yogurt",
+      "1 Protein shake",
+      "2x Yogurt",
+    ]);
+  });
 });
