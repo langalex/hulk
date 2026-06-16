@@ -30,6 +30,10 @@ jobs:
 
       - run: npm run check
 
+      - run: npm run lint
+
+      - run: npm run fmt:check
+
       - run: npm test
 
   build:

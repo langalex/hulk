@@ -1,81 +1,81 @@
-import PouchDB from 'pouchdb';
-import MemoryAdapter from 'pouchdb-adapter-memory';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { dayId } from './ids';
-import { addIntake, getDay, removeIntake, updateIntake } from './day-repository';
-import { setProteinGoal } from './settings-repository';
-import { clearDbSingleton, resetDbForTests } from './pouch';
+import PouchDB from "pouchdb";
+import MemoryAdapter from "pouchdb-adapter-memory";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { dayId } from "./ids";
+import { addIntake, getDay, removeIntake, updateIntake } from "./day-repository";
+import { setProteinGoal } from "./settings-repository";
+import { clearDbSingleton, resetDbForTests } from "./pouch";
 
 PouchDB.plugin(MemoryAdapter);
 
-describe('day-repository', () => {
-	let db: PouchDB.Database;
+describe("day-repository", () => {
+  let db: PouchDB.Database;
 
-	beforeEach(() => {
-		db = new PouchDB('test-days', { adapter: 'memory' });
-		resetDbForTests(db as never);
-	});
+  beforeEach(() => {
+    db = new PouchDB("test-days", { adapter: "memory" });
+    resetDbForTests(db as never);
+  });
 
-	afterEach(async () => {
-		await db.destroy();
-		clearDbSingleton();
-	});
+  afterEach(async () => {
+    await db.destroy();
+    clearDbSingleton();
+  });
 
-	it('returns empty day when document is missing', async () => {
-		const day = await getDay('2026-06-12');
-		expect(day).toEqual({ _id: dayId('2026-06-12'), date: '2026-06-12', intakes: [] });
-	});
+  it("returns empty day when document is missing", async () => {
+    const day = await getDay("2026-06-12");
+    expect(day).toEqual({ _id: dayId("2026-06-12"), date: "2026-06-12", intakes: [] });
+  });
 
-	it('adds and sorts intakes by time', async () => {
-		await addIntake('2026-06-12', { time: '14:00', description: 'Lunch', grams: 30 });
-		await addIntake('2026-06-12', { time: '08:00', description: 'Breakfast', grams: 20 });
+  it("adds and sorts intakes by time", async () => {
+    await addIntake("2026-06-12", { time: "14:00", description: "Lunch", grams: 30 });
+    await addIntake("2026-06-12", { time: "08:00", description: "Breakfast", grams: 20 });
 
-		const day = await getDay('2026-06-12');
-		expect(day.intakes).toHaveLength(2);
-		expect(day.intakes[0].description).toBe('Breakfast');
-		expect(day.intakes[1].description).toBe('Lunch');
-	});
+    const day = await getDay("2026-06-12");
+    expect(day.intakes).toHaveLength(2);
+    expect(day.intakes[0].description).toBe("Breakfast");
+    expect(day.intakes[1].description).toBe("Lunch");
+  });
 
-	it('removes intake and deletes doc when last intake removed', async () => {
-		await addIntake('2026-06-12', { time: '08:00', description: 'Breakfast', grams: 20 });
-		const day = await getDay('2026-06-12');
-		await removeIntake('2026-06-12', day.intakes[0].id);
+  it("removes intake and deletes doc when last intake removed", async () => {
+    await addIntake("2026-06-12", { time: "08:00", description: "Breakfast", grams: 20 });
+    const day = await getDay("2026-06-12");
+    await removeIntake("2026-06-12", day.intakes[0].id);
 
-		const after = await getDay('2026-06-12');
-		expect(after.intakes).toHaveLength(0);
-	});
+    const after = await getDay("2026-06-12");
+    expect(after.intakes).toHaveLength(0);
+  });
 
-	it('updates an existing intake', async () => {
-		await addIntake('2026-06-12', {
-			id: 'intake-1',
-			time: '08:00',
-			description: 'Breakfast',
-			grams: 20
-		});
-		await updateIntake('2026-06-12', 'intake-1', {
-			time: '09:00',
-			description: 'Late breakfast',
-			grams: 30,
-			multiplier: 1
-		});
+  it("updates an existing intake", async () => {
+    await addIntake("2026-06-12", {
+      id: "intake-1",
+      time: "08:00",
+      description: "Breakfast",
+      grams: 20,
+    });
+    await updateIntake("2026-06-12", "intake-1", {
+      time: "09:00",
+      description: "Late breakfast",
+      grams: 30,
+      multiplier: 1,
+    });
 
-		const day = await getDay('2026-06-12');
-		expect(day.intakes).toEqual([
-			{
-				id: 'intake-1',
-				time: '09:00',
-				description: 'Late breakfast',
-				grams: 30,
-				multiplier: 1
-			}
-		]);
-	});
+    const day = await getDay("2026-06-12");
+    expect(day.intakes).toEqual([
+      {
+        id: "intake-1",
+        time: "09:00",
+        description: "Late breakfast",
+        grams: 30,
+        multiplier: 1,
+      },
+    ]);
+  });
 
-	it('stores current protein goal on first intake of the day', async () => {
-		await setProteinGoal(150);
-		await addIntake('2026-06-13', { time: '08:00', description: 'Breakfast', grams: 20 });
+  it("stores current protein goal on first intake of the day", async () => {
+    await setProteinGoal(150);
+    await addIntake("2026-06-13", { time: "08:00", description: "Breakfast", grams: 20 });
 
-		const day = await getDay('2026-06-13');
-		expect(day.goalGrams).toBe(150);
-	});
+    const day = await getDay("2026-06-13");
+    expect(day.goalGrams).toBe(150);
+  });
 });
