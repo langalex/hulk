@@ -48,8 +48,8 @@
     "vitest": "^4.1.8"
   },
   "lint-staged": {
-    "*.{js,ts,svelte,css,json}": [
-      "oxlint --fix",
+    "*.{js,ts,svelte,css,json,html}": [
+      "oxlint --fix --no-error-on-unmatched-pattern",
       "oxfmt --no-error-on-unmatched-pattern"
     ]
   }
